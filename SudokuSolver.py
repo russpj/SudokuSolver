@@ -22,6 +22,19 @@ board = [
 	[0,2,0,0,0,0,7,0,0]
 	]
 
+def PrintRow(row):
+	global board
+	for col in range(9):
+		if board[row][col] == 0:
+			print('.', end='')
+		else:
+			print(board[row][col], end='')
+	print()
+
+def PrintBoard():
+	for row in range(9):
+		PrintRow(row)
+
 def CanPlaceInRow(n, row):
 	global board
 	for col in range(9):
@@ -58,8 +71,10 @@ def Solve():
 					if CanPlace(trial, row, col):
 						board[row][col] = trial
 						Solve()
-						board[row][col] = 0
+				board[row][col] = 0
 				return
-	print(board)
+	PrintBoard()
 
+PrintBoard()
+print("Solving...")
 Solve()
