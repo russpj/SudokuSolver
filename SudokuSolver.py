@@ -82,7 +82,9 @@ def CanPlaceInSquare(n, row, col):
 	return True;
 
 def CanPlace(n, row, col) :
-	return CanPlaceInRow(n, row) and CanPlaceInColumn(n, col) and CanPlaceInSquare(n, row, col)
+	return (CanPlaceInRow(n, row) 
+				 and CanPlaceInColumn(n, col) 
+				 and CanPlaceInSquare(n, row, col))
 
 def Solve():
 	global board
