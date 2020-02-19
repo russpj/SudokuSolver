@@ -104,3 +104,4 @@ def Solve():
 PrintBoard()
 print("Solving...")
 Solve()
+PrintBoard()
