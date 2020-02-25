@@ -101,7 +101,11 @@ def Solve():
 	PrintBoard()
 	sleep(4)
 
-PrintBoard()
-print("Solving...")
-Solve()
-PrintBoard()
+def Main():
+	PrintBoard()
+	print("Solving...")
+	Solve()
+	PrintBoard()
+
+if __name__ == '__main__':
+	Main()
