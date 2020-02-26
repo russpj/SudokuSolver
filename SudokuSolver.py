@@ -115,6 +115,7 @@ class Sudoku(App):
 			self.rect = Rectangle(size=layout.size, pos=layout.pos)
 			Color(0.1, .1, .9, 1)
 			self.square = Rectangle(size=layout.size, pos=layout.pos)
+			Color(0.1, .9, 0.1, 1)  # green; colors range from 0-1 not 0-255
 			self.vline1 = Line()
 			self.vline2 = Line()
 			self.hline1 = Line()
@@ -128,13 +129,18 @@ class Sudoku(App):
 		instanceWidth = size[0]
 		instanceHeight = size[1]
 		if instanceWidth < instanceHeight:
-			ellipseSize = [instanceWidth, instanceWidth]
-			ellipsePos = [instanceX, instanceY - (instanceWidth-instanceHeight)/2]
+			squareSize = [instanceWidth, instanceWidth]
+			squarePos = [instanceX, instanceY - (instanceWidth-instanceHeight)/2]
 		else:
-			ellipseSize = [instanceHeight, instanceHeight]
-			ellipsePos = [instanceX - (instanceHeight-instanceWidth)/2, instanceY]
-		self.square.pos = ellipsePos
-		self.square.size = ellipseSize
+			squareSize = [instanceHeight, instanceHeight]
+			squarePos = [instanceX - (instanceHeight-instanceWidth)/2, instanceY]
+		self.square.pos = squarePos
+		self.square.size = squareSize
+
+		self.vline1.points = (squarePos[0] + squareSize[0]/3, squarePos[1], squarePos[0] + squareSize[0]/3, squarePos[1]+squareSize[1])
+		self.vline2.points = (squarePos[0] + 2*squareSize[0]/3, squarePos[1], squarePos[0] + 2*squareSize[0]/3, squarePos[1]+squareSize[1])
+		self.hline1.points = (squarePos[0], squarePos[1] + squareSize[1]/3, squarePos[0]+squareSize[0], squarePos[1] + squareSize[1]/3)
+		self.hline2.points = (squarePos[0], squarePos[1] + 2*squareSize[1]/3, squarePos[0]+squareSize[0], squarePos[1] + 2*squareSize[1]/3)
 
 	def _update_rect(self, instance, value):
 		self.root.canvas.clear()
