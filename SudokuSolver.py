@@ -1,8 +1,12 @@
 from os import system, name
 from time import sleep
 from kivy.app import App
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.graphics import Color, Ellipse, Rectangle, Line
+from kivy.uix.textinput import TextInput
+from kivy.uix.label import Label
+from kivy.uix.button import Button
 
 simpleSudoku = [
 	[1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -107,7 +111,7 @@ def Solve():
 
 class Sudoku(App):
 	def build(self):
-		self.root = layout = FloatLayout()
+		self.root = layout = GridLayout(cols=9)
 		layout.bind(size=self._update_rect, pos=self._update_rect)
 
 		with layout.canvas.before:
@@ -115,11 +119,24 @@ class Sudoku(App):
 			self.rect = Rectangle(size=layout.size, pos=layout.pos)
 			Color(0.1, .1, .9, 1)
 			self.square = Rectangle(size=layout.size, pos=layout.pos)
+			
+			# create 81 text input boxes for the values
+			labelWidth = layout.size[0]/9
+			labelHeight = layout.size[1]/9
+			for row in range(9):
+				for col in range(9):
+					number = str(board[row][col])
+					if number == "0":
+						number = " "
+					squareValue = Label(text=number)
+					self.root.add_widget(squareValue)
+
 			Color(0.1, .9, 0.1, 1)  # green; colors range from 0-1 not 0-255
 			self.vline1 = Line()
 			self.vline2 = Line()
 			self.hline1 = Line()
 			self.hline2 = Line()
+
 
 		return layout
 
