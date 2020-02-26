@@ -1,6 +1,7 @@
 from os import system, name
 from time import sleep
 from kivy.app import App
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.graphics import Color, Ellipse, Rectangle, Line
@@ -111,8 +112,10 @@ def Solve():
 
 class Sudoku(App):
 	def build(self):
-		self.root = layout = GridLayout(cols=9)
+		self.root = layout = AnchorLayout(anchor_x = 'center', anchor_y='center', padding = (100,100))
 		layout.bind(size=self._update_rect, pos=self._update_rect)
+		self.grid = GridLayout(cols=9)
+		layout.add_widget(self.grid)
 
 		with layout.canvas.before:
 			Color(0.1, .9, 0.1, 1)  # green; colors range from 0-1 not 0-255
@@ -121,15 +124,13 @@ class Sudoku(App):
 			self.square = Rectangle(size=layout.size, pos=layout.pos)
 			
 			# create 81 text input boxes for the values
-			labelWidth = layout.size[0]/9
-			labelHeight = layout.size[1]/9
 			for row in range(9):
 				for col in range(9):
 					number = str(board[row][col])
 					if number == "0":
 						number = " "
 					squareValue = Label(text=number)
-					self.root.add_widget(squareValue)
+					self.grid.add_widget(squareValue)
 
 			Color(0.1, .9, 0.1, 1)  # green; colors range from 0-1 not 0-255
 			self.vline1 = Line()
@@ -148,11 +149,16 @@ class Sudoku(App):
 		if instanceWidth < instanceHeight:
 			squareSize = [instanceWidth, instanceWidth]
 			squarePos = [instanceX, instanceY - (instanceWidth-instanceHeight)/2]
+			paddingWidth = 0
+			paddingHeight = (instanceHeight-instanceWidth)/2
 		else:
 			squareSize = [instanceHeight, instanceHeight]
 			squarePos = [instanceX - (instanceHeight-instanceWidth)/2, instanceY]
+			paddingWidth = (instanceWidth - instanceHeight)/2
+			paddingHeight = 0
 		self.square.pos = squarePos
 		self.square.size = squareSize
+		self.root.padding = (paddingWidth, paddingHeight)
 
 		self.vline1.points = (squarePos[0] + squareSize[0]/3, squarePos[1], squarePos[0] + squareSize[0]/3, squarePos[1]+squareSize[1])
 		self.vline2.points = (squarePos[0] + 2*squareSize[0]/3, squarePos[1], squarePos[0] + 2*squareSize[0]/3, squarePos[1]+squareSize[1])
