@@ -1,5 +1,8 @@
 from os import system, name
 from time import sleep
+from kivy.app import App
+from kivy.uix.floatlayout import FloatLayout
+from kivy.graphics import Color, Ellipse, Rectangle, Line
 
 simpleSudoku = [
 	[1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -101,11 +104,40 @@ def Solve():
 	PrintBoard()
 	sleep(4)
 
+
+class Sudoku(App):
+	def build(self):
+		self.root = layout = FloatLayout()
+		layout.bind(size=self._update_rect, pos=self._update_rect)
+
+		with layout.canvas.before:
+			Color(0.1, .9, 0.1, 1)  # green; colors range from 0-1 not 0-255
+			self.rect = Rectangle(size=layout.size, pos=layout.pos)
+			Color(0.1, .1, .9, 1)
+			self.ellipse = Ellipse(size=layout.size, pos=layout.pos)
+
+		return layout
+
+	def _update_rect(self, instance, value):
+		self.root.canvas.clear()
+		self.rect.pos = instance.pos
+		self.rect.size = instance.size
+		instanceX = instance.pos[0]
+		instanceY = instance.pos[1]
+		instanceWidth = instance.size[0]
+		instanceHeight = instance.size[1]
+		if instanceWidth < instanceHeight:
+			ellipseSize = [instanceWidth, instanceWidth]
+			ellipsePos = [instanceX, instanceY - (instanceWidth-instanceHeight)/2]
+		else:
+			ellipseSize = [instanceHeight, instanceHeight]
+			ellipsePos = [instanceX - (instanceHeight-instanceWidth)/2, instanceY]
+		self.ellipse.pos = ellipsePos
+		self.ellipse.size = ellipseSize
+
+
 def Main():
-	PrintBoard()
-	print("Solving...")
-	Solve()
-	PrintBoard()
+	Sudoku().run()
 
 if __name__ == '__main__':
 	Main()
