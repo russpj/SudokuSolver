@@ -8,6 +8,7 @@ from kivy.graphics import Color, Ellipse, Rectangle, Line
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+from kivy.clock import Clock
 
 simpleSudoku = [
 	[1, 2, 3, 4, 5, 6, 7, 8, 9],
@@ -58,13 +59,6 @@ def PrintRow(row):
 			print('|', end='')
 	print()
 
-def PrintBoard():
-	system("cls")
-	for row in range(9):
-		PrintRow(row)
-		if row==2 or row==5:
-			print("---+---+---")
-
 def CanPlaceInRow(n, row):
 	global board
 	for col in range(9):
@@ -94,25 +88,10 @@ def CanPlace(n, row, col) :
 				 and CanPlaceInColumn(n, col) 
 				 and CanPlaceInSquare(n, row, col))
 
-def Solve():
-	global board
-	for row in range(9):
-		for col in range(9):
-			if board[row][col] == 0:
-				for trial in range(1, 10):
-					if CanPlace(trial, row, col):
-						board[row][col] = trial
-						PrintBoard()
-						Solve()
-				board[row][col] = 0
-				return
-	PrintBoard()
-	sleep(4)
-
 
 class Sudoku(App):
 	def build(self):
-		self.root = layout = AnchorLayout(anchor_x = 'center', anchor_y='center', padding = (100,100))
+		self.root = layout = AnchorLayout(anchor_x = 'center', anchor_y='center')
 		layout.bind(size=self._update_rect, pos=self._update_rect)
 		self.grid = GridLayout(cols=9)
 		layout.add_widget(self.grid)
@@ -124,13 +103,17 @@ class Sudoku(App):
 			self.square = Rectangle(size=layout.size, pos=layout.pos)
 			
 			# create 81 text input boxes for the values
+			self.labels = []
 			for row in range(9):
+				rowLabels = []
 				for col in range(9):
 					number = str(board[row][col])
 					if number == "0":
 						number = " "
 					squareValue = Label(text=number)
+					rowLabels.append(squareValue)
 					self.grid.add_widget(squareValue)
+				self.labels.append(rowLabels)
 
 			Color(0.1, .9, 0.1, 1)  # green; colors range from 0-1 not 0-255
 			self.vline1 = Line()
@@ -138,6 +121,7 @@ class Sudoku(App):
 			self.hline1 = Line()
 			self.hline2 = Line()
 
+			Clock.schedule_once(self.Solve, 1)
 
 		return layout
 
@@ -170,6 +154,37 @@ class Sudoku(App):
 		self.rect.pos = instance.pos
 		self.rect.size = instance.size
 		self.updateGrid(instance.pos, instance.size)
+
+
+	def UpdateText(self):
+		grid=self.grid
+		ids = grid.ids
+		for row in range(9):
+			for col in range(9):
+				number = str(board[row][col])
+				if number == "0":
+					number = " "
+				label = self.labels[row][col]
+				label.text = number
+
+	def PrintBoard(self):
+		self.UpdateText()
+
+	def Solve(self, dt):
+		global board
+		for row in range(9):
+			for col in range(9):
+				if board[row][col] == 0:
+					for trial in range(1, 10):
+						if CanPlace(trial, row, col):
+							board[row][col] = trial
+							self.PrintBoard()
+							self.Solve(self)
+					board[row][col] = 0
+					return
+		self.PrintBoard()
+		sleep(4)
+
 
 def Main():
 	Sudoku().run()
