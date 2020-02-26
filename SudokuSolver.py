@@ -118,10 +118,7 @@ class Sudoku(App):
 
 		return layout
 
-	def _update_rect(self, instance, value):
-		self.root.canvas.clear()
-		self.rect.pos = instance.pos
-		self.rect.size = instance.size
+	def updateGrid(self, instance):
 		instanceX = instance.pos[0]
 		instanceY = instance.pos[1]
 		instanceWidth = instance.size[0]
@@ -135,6 +132,12 @@ class Sudoku(App):
 		self.ellipse.pos = ellipsePos
 		self.ellipse.size = ellipseSize
 
+
+	def _update_rect(self, instance, value):
+		self.root.canvas.clear()
+		self.rect.pos = instance.pos
+		self.rect.size = instance.size
+		self.updateGrid(instance)
 
 def Main():
 	Sudoku().run()
