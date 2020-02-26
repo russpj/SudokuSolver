@@ -114,7 +114,7 @@ class Sudoku(App):
 			Color(0.1, .9, 0.1, 1)  # green; colors range from 0-1 not 0-255
 			self.rect = Rectangle(size=layout.size, pos=layout.pos)
 			Color(0.1, .1, .9, 1)
-			self.ellipse = Ellipse(size=layout.size, pos=layout.pos)
+			self.square = Rectangle(size=layout.size, pos=layout.pos)
 
 		return layout
 
@@ -129,8 +129,8 @@ class Sudoku(App):
 		else:
 			ellipseSize = [instanceHeight, instanceHeight]
 			ellipsePos = [instanceX - (instanceHeight-instanceWidth)/2, instanceY]
-		self.ellipse.pos = ellipsePos
-		self.ellipse.size = ellipseSize
+		self.square.pos = ellipsePos
+		self.square.size = ellipseSize
 
 
 	def _update_rect(self, instance, value):
