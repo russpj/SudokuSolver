@@ -115,14 +115,18 @@ class Sudoku(App):
 			self.rect = Rectangle(size=layout.size, pos=layout.pos)
 			Color(0.1, .1, .9, 1)
 			self.square = Rectangle(size=layout.size, pos=layout.pos)
+			self.vline1 = Line()
+			self.vline2 = Line()
+			self.hline1 = Line()
+			self.hline2 = Line()
 
 		return layout
 
-	def updateGrid(self, instance):
-		instanceX = instance.pos[0]
-		instanceY = instance.pos[1]
-		instanceWidth = instance.size[0]
-		instanceHeight = instance.size[1]
+	def updateGrid(self, pos, size):
+		instanceX = pos[0]
+		instanceY = pos[1]
+		instanceWidth = size[0]
+		instanceHeight = size[1]
 		if instanceWidth < instanceHeight:
 			ellipseSize = [instanceWidth, instanceWidth]
 			ellipsePos = [instanceX, instanceY - (instanceWidth-instanceHeight)/2]
@@ -132,12 +136,11 @@ class Sudoku(App):
 		self.square.pos = ellipsePos
 		self.square.size = ellipseSize
 
-
 	def _update_rect(self, instance, value):
 		self.root.canvas.clear()
 		self.rect.pos = instance.pos
 		self.rect.size = instance.size
-		self.updateGrid(instance)
+		self.updateGrid(instance.pos, instance.size)
 
 def Main():
 	Sudoku().run()
