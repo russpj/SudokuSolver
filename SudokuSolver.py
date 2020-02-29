@@ -90,8 +90,13 @@ class SudokuSolver:
 						and self.CanPlaceInSquare(n, row, col))
 
 	def Solve(self):
-		row = 0
-		col = 0
+		if (self.trialStack):
+			location = self.trialStack.pop()
+			row = location[0]
+			col = location[1]
+		else:
+			row = 0
+			col = 0
 		while row < 9:
 			while col < 9:
 				if self.board[row][col] == 0:
