@@ -94,9 +94,11 @@ class SudokuSolver:
 					for trial in range(1, 10):
 						if self.CanPlace(trial, row, col):
 							self.board[row][col] = trial
-							self.PrintBoard()
+							if row == 8 and col == 8:
+								self.solvedBoard = []
+								for rowSource in range(0, 9):
+									self.solvedBoard.append(self.board[rowSource].copy())
 							self.Solve()
 					self.board[row][col] = 0
 					return
-		self.PrintBoard()
-		sleep(4)
+		return
