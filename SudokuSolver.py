@@ -1,5 +1,6 @@
 from time import sleep
 from os import system
+from collections import deque
 
 
 simpleSudoku = [
@@ -43,6 +44,7 @@ class SudokuSolver:
 	def __init__(self):
 		global easyBoard
 		self.board = easyBoard
+		self.trialStack = deque()
  
 	def PrintRow(self, row):
 		for col in range(9):
