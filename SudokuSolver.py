@@ -89,6 +89,12 @@ class SudokuSolver:
 						and self.CanPlaceInColumn(n, col) 
 						and self.CanPlaceInSquare(n, row, col))
 
+	def CopyBoard(self):
+		newBoard = []
+		for row in range(9):
+			newBoard.append(self.board[row].copy())
+		return newBoard
+
 	def SolveStep(self):
 		if (self.trialStack):
 			location = self.trialStack.pop()
@@ -124,9 +130,7 @@ class SudokuSolver:
 						if self.CanPlace(trial, row, col):
 							self.board[row][col] = trial
 							if row == 8 and col == 8:
-								self.solvedBoard = []
-								for rowSource in range(0, 9):
-									self.solvedBoard.append(self.board[rowSource].copy())
+								self.solvedBoard = self.CopyBoard()
 								return
 							self.Solve()
 					self.board[row][col] = 0
