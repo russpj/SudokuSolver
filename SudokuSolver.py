@@ -117,28 +117,18 @@ class SudokuSolver:
 		return
 
 	def Solve(self):
-		if (self.trialStack):
-			location = self.trialStack.pop()
-			row = location[0]
-			col = location[1]
-		else:
-			row = 0
-			col = 0
-		while row < 9:
-			while col < 9:
+		for row in range(9):
+			for col in range(9):
 				if self.board[row][col] == 0:
 					for trial in range(1, 10):
 						if self.CanPlace(trial, row, col):
 							self.board[row][col] = trial
-							self.trialStack.append((row, col))
 							if row == 8 and col == 8:
 								self.solvedBoard = []
 								for rowSource in range(0, 9):
 									self.solvedBoard.append(self.board[rowSource].copy())
+								return
 							self.Solve()
 					self.board[row][col] = 0
 					return
-				col = col + 1
-			col = 0
-			row = row + 1
 		return
