@@ -138,10 +138,8 @@ class SudokuSolver:
 					for trial in range(1, 10):
 						if self.CanPlace(trial, row, col):
 							self.board[row][col] = trial
-							if row == 8 and col == 8:
-								self.solvedBoard = self.CopyBoard()
-								return
 							self.Solve()
 					self.board[row][col] = 0
 					return
+		self.solvedBoard = self.CopyBoard()
 		return
