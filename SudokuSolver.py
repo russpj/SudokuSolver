@@ -95,32 +95,41 @@ class SudokuSolver:
 			newBoard.append(self.board[row].copy())
 		return newBoard
 
+	# SolveStep
+	#
+	# Does one step of solving the Sudoku.
+	# Returns true if stepping should continue
+	# Returns false if it is through all the loops and the algorithm should stop.
 	def SolveStep(self):
 		if (self.trialStack):
-			location = self.trialStack.pop()
+			location = self.trialStack[-1]
 			row = location[0]
 			col = location[1]
+			trial = 1
 		else:
 			row = 0
 			col = 0
+			trial = 1
 		while row < 9:
 			while col < 9:
 				if self.board[row][col] == 0:
-					for trial in range(1, 10):
+					while trial < 10:
 						if self.CanPlace(trial, row, col):
 							self.board[row][col] = trial
-							self.trialStack.append((row, col))
 							if row == 8 and col == 8:
-								self.solvedBoard = []
-								for rowSource in range(0, 9):
-									self.solvedBoard.append(self.board[rowSource].copy())
-							self.Solve()
+								solvedBoard = self.CopyBoard()
+								return True #return
+							self.trialStack.append((row, col, trial))	#self.Solve()
+							return True
+						trial = trial + 1
 					self.board[row][col] = 0
-					return
+					location = self.trialStack.pop()
+					self.trialStack[-1] = location
+					return True
 				col = col + 1
 			col = 0
 			row = row + 1
-		return
+		return False
 
 	def Solve(self):
 		for row in range(9):
