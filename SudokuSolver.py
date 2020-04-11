@@ -116,19 +116,18 @@ class SudokuSolver:
 					while trial < 10:
 						if self.CanPlace(trial, row, col):
 							self.board[row][col] = trial
-							if row == 8 and col == 8:
-								solvedBoard = self.CopyBoard()
-								return True #return
 							self.trialStack.append((row, col, trial))	#self.Solve()
 							return True
 						trial = trial + 1
-					self.board[row][col] = 0
-					location = self.trialStack.pop()
-					self.trialStack[-1] = location
+					location = self.trialStack.pop() # Handle the 'return' from self.Solve
+					self.board[location[0]][location[1]] = 0
+					trial = location[2]
+					self.trialStack[-1][2] = self.trialStack[-1][2] + 1 # trial += 1
 					return True
 				col = col + 1
 			col = 0
 			row = row + 1
+		self.solvedBoard = self.CopyBoard()
 		return False
 
 	def Solve(self):
