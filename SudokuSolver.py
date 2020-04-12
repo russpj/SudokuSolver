@@ -43,7 +43,7 @@ class SudokuSolver:
 	def __init__(self):
 		global easyBoard
 		self.board = easyBoard
- 
+
 	def PrintRow(self, row):
 		for col in range(9):
 			if self.board[row][col] == 0:
