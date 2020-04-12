@@ -3,7 +3,7 @@ from SudokuSolver import SudokuSolver
 
 def Main():
 	solver = SudokuSolver()
-	solver.Solve()
+	solver.Generate()
 
 if __name__ == '__main__':
 	Main()

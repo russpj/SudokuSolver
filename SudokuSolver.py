@@ -41,8 +41,8 @@ easyBoard = [
 
 class SudokuSolver:
 	def __init__(self):
-		global easyBoard
-		self.board = easyBoard
+		global hardBoard
+		self.board = hardBoard
 
 	def PrintRow(self, row):
 		for col in range(9):
@@ -96,6 +96,20 @@ class SudokuSolver:
 							self.board[row][col] = trial
 							self.PrintBoard()
 							self.Solve()
+					self.board[row][col] = 0
+					return
+		self.PrintBoard()
+		sleep(4)
+
+	def Generate(self):
+		for row in range(9):
+			for col in range(9):
+				if self.board[row][col] == 0:
+					for trial in range(1, 10):
+						if self.CanPlace(trial, row, col):
+							self.board[row][col] = trial
+							# self.PrintBoard()
+							self.Generate()
 					self.board[row][col] = 0
 					return
 		self.PrintBoard()
