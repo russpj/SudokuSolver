@@ -34,8 +34,11 @@ class Sudoku(App):
 				for col in range(9):
 					number = str(board[row][col])
 					if number == "0":
+						backColor = [1, 0, 0, 1]
 						number = " "
-					squareValue = Label(text=number)
+					else:
+						backColor = [0, 1, 0, 1]
+					squareValue = Label(text=number, color=backColor)
 					rowLabels.append(squareValue)
 					self.grid.add_widget(squareValue)
 				self.labels.append(rowLabels)
