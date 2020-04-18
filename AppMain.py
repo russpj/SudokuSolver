@@ -46,7 +46,7 @@ class Sudoku(App):
 			self.hline1 = Line()
 			self.hline2 = Line()
 
-			self.generator = self.solver.Generate
+			self.generator = self.solver.Generate()
 
 			# Clock.schedule_once(self.Frame0, 1)
 			Clock.schedule_interval(self.FrameN, 1.0)
@@ -91,6 +91,7 @@ class Sudoku(App):
 		stop = False
 		try:
 			result = next(self.generator)
+			self.UpdateText(self.solver.board)
 			self.root.canvas.ask_update()
 		except StopIteration:
 			# kill the timer
