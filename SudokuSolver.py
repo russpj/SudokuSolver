@@ -142,3 +142,18 @@ class SudokuSolver:
 					return
 		self.solvedBoard = self.CopyBoard()
 		return
+
+	def Generate(self):
+		for row in range(9):
+			for col in range(9):
+				if self.board[row][col] == 0:
+					for trial in range(1, 10):
+						if self.CanPlace(trial, row, col):
+							self.board[row][col] = trial
+							# self.PrintBoard()
+							yield 1
+							yield from self.Generate()
+					self.board[row][col] = 0
+					return
+		# self.PrintBoard()
+		yield 2
