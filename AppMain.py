@@ -46,8 +46,10 @@ class Sudoku(App):
 			self.hline1 = Line()
 			self.hline2 = Line()
 
-			Clock.schedule_once(self.Frame0, 1)
-			# Clock.schedule_interval(self.FrameN, 1.0)
+			self.generator = self.solver.Generate
+
+			# Clock.schedule_once(self.Frame0, 1)
+			Clock.schedule_interval(self.FrameN, 1.0)
 
 		return layout
 
@@ -86,8 +88,13 @@ class Sudoku(App):
 		self.UpdateText(self.solver.solvedBoard)
 
 	def FrameN(self, dt):
-		stop = self.solver.SolveStep()
-		self.root.canvas.ask_update()
+		stop = False
+		try:
+			result = next(self.generator)
+			self.root.canvas.ask_update()
+		except StopIteration:
+			# kill the timer
+			stop = True
 
 
 	def UpdateText(self, board):
