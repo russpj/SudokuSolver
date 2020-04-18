@@ -19,9 +19,9 @@ class Sudoku(App):
 		layout.add_widget(self.grid)
 
 		with layout.canvas.before:
-			Color(0.1, .9, 0.1, 1)  # green; colors range from 0-1 not 0-255
+			Color(0.1, .3, 0.1, 1)  # green; colors range from 0-1 not 0-255
 			self.rect = Rectangle(size=layout.size, pos=layout.pos)
-			Color(0.1, .1, .9, 1)
+			Color(0.1, .1, .5, .5)
 			self.square = Rectangle(size=layout.size, pos=layout.pos)
 			
 			self.solver = SudokuSolver()
@@ -50,9 +50,10 @@ class Sudoku(App):
 			self.hline2 = Line()
 
 			self.generator = self.solver.Generate()
+			self.pause = 0.0
 
 			# Clock.schedule_once(self.Frame0, 1)
-			Clock.schedule_interval(self.FrameN, 0)
+			Clock.schedule_interval(self.FrameN, 0.3)
 
 		return layout
 
@@ -91,14 +92,16 @@ class Sudoku(App):
 		self.UpdateText(self.solver.solvedBoard)
 
 	def FrameN(self, dt):
-		# stop = False
+		if self.pause > 0.0:
+			self.pause = self.pause-dt
+			return
 		try:
 			result = next(self.generator)
 			self.UpdateText(self.solver.board)
-			# self.root.canvas.ask_update()
+			if result == 2:
+				self.pause = 4.0
 		except StopIteration:
 			# kill the timer
-			# stop = True
 			pass
 
 
