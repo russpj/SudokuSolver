@@ -1,4 +1,3 @@
-from time import sleep
 from os import system
 
 
@@ -41,8 +40,8 @@ easyBoard = [
 
 class SudokuSolver:
 	def __init__(self):
-		global hardBoard
-		self.board = hardBoard
+		global easyBoard
+		self.board = easyBoard
 
 	def PrintRow(self, row):
 		for col in range(9):
@@ -109,8 +108,9 @@ class SudokuSolver:
 						if self.CanPlace(trial, row, col):
 							self.board[row][col] = trial
 							# self.PrintBoard()
-							self.Generate()
+							yield 1
+							yield from self.Generate()
 					self.board[row][col] = 0
 					return
-		self.PrintBoard()
-		sleep(4)
+		# self.PrintBoard()
+		yield 2
