@@ -49,7 +49,7 @@ class Sudoku(App):
 			self.generator = self.solver.Generate()
 
 			# Clock.schedule_once(self.Frame0, 1)
-			Clock.schedule_interval(self.FrameN, 1.0)
+			Clock.schedule_interval(self.FrameN, 0)
 
 		return layout
 
@@ -88,14 +88,15 @@ class Sudoku(App):
 		self.UpdateText(self.solver.solvedBoard)
 
 	def FrameN(self, dt):
-		stop = False
+		# stop = False
 		try:
 			result = next(self.generator)
 			self.UpdateText(self.solver.board)
-			self.root.canvas.ask_update()
+			# self.root.canvas.ask_update()
 		except StopIteration:
 			# kill the timer
-			stop = True
+			# stop = True
+			pass
 
 
 	def UpdateText(self, board):
