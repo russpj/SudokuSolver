@@ -14,7 +14,7 @@ from SudokuSolver import SudokuSolver
 
 class Sudoku(App):
 	def build(self):
-		self.root = layout = AnchorLayout(anchor_x = 'center', anchor_y='center')
+		self.root = layout = BoxLayout()
 		layout.bind(size=self._update_rect, pos=self._update_rect)
 		self.grid = GridLayout(cols=9)
 		layout.add_widget(self.grid)
