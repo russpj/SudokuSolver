@@ -133,10 +133,18 @@ class BoardLayout(BoxLayout):
 class Sudoku(App):
 	def build(self):
 		self.root = layout = BoxLayout(orientation = 'vertical')
+
+		# header
+		self.header = BoxLayout(orientation='horizontal')
+		layout.add_widget(self.header)
+
+		# board
 		self.boardLayout = boardLayout = BoardLayout()
 		layout.add_widget(boardLayout)
-		self.grid = GridLayout(cols=9)
-		# boxLayout.add_widget(self.grid)
+
+		# footer
+		self.footer = BoxLayout(orientation='horizontal')
+		layout.add_widget(self.footer)
 
 		self.solver = SudokuSolver()
 		board = self.solver.board
