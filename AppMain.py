@@ -2,9 +2,8 @@ from os import name
 from kivy.app import App
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.boxlayout import BoxLayout
-from kivy.graphics import Color, Ellipse, Rectangle, Line
+from kivy.graphics import Color, Rectangle, Line
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 from kivy.uix.button import Button
@@ -139,71 +138,15 @@ class Sudoku(App):
 		self.grid = GridLayout(cols=9)
 		# boxLayout.add_widget(self.grid)
 
-		boxLayout = BoxLayout()
-		with boxLayout.canvas.before:
-			self.solver = SudokuSolver()
-			board = self.solver.board
+		self.solver = SudokuSolver()
+		board = self.solver.board
+		self.boardLayout.InitBoard(board)
 
-			self.boardLayout.InitBoard(board)
-
-			# create 81 text input boxes for the values
-			self.labels = []
-			for row in range(9):
-				rowLabels = []
-				for col in range(9):
-					number = str(board[row][col])
-					if number == "0":
-						backColor = [1, 0, 0, 1]
-						number = " "
-					else:
-						backColor = [0, 1, 0, 1]
-					squareValue = Label(text=number, color=backColor)
-					rowLabels.append(squareValue)
-					self.grid.add_widget(squareValue)
-				self.labels.append(rowLabels)
-
-			Color(0.1, .9, 0.1, 1)  # green; colors range from 0-1 not 0-255
-			self.vline1 = Line()
-			self.vline2 = Line()
-			self.hline1 = Line()
-			self.hline2 = Line()
-
-			self.generator = self.solver.Generate()
-			self.pause = 0.0
-
-			Clock.schedule_interval(self.FrameN, 0.0)
+		self.generator = self.solver.Generate()
+		self.pause = 0.0
+		Clock.schedule_interval(self.FrameN, 0.0)
 
 		return layout
-
-	def updateGrid(self, pos, size):
-		instanceX = pos[0]
-		instanceY = pos[1]
-		instanceWidth = size[0]
-		instanceHeight = size[1]
-		if instanceWidth < instanceHeight:
-			squareSize = [instanceWidth, instanceWidth]
-			squarePos = [instanceX, instanceY - (instanceWidth-instanceHeight)/2]
-			paddingWidth = 0
-			paddingHeight = (instanceHeight-instanceWidth)/2
-		else:
-			squareSize = [instanceHeight, instanceHeight]
-			squarePos = [instanceX - (instanceHeight-instanceWidth)/2, instanceY]
-			paddingWidth = (instanceWidth - instanceHeight)/2
-			paddingHeight = 0
-		self.square.pos = squarePos
-		self.square.size = squareSize
-		self.root.padding = (paddingWidth, paddingHeight)
-
-		self.vline1.points = (squarePos[0] + squareSize[0]/3, squarePos[1], squarePos[0] + squareSize[0]/3, squarePos[1]+squareSize[1])
-		self.vline2.points = (squarePos[0] + 2*squareSize[0]/3, squarePos[1], squarePos[0] + 2*squareSize[0]/3, squarePos[1]+squareSize[1])
-		self.hline1.points = (squarePos[0], squarePos[1] + squareSize[1]/3, squarePos[0]+squareSize[0], squarePos[1] + squareSize[1]/3)
-		self.hline2.points = (squarePos[0], squarePos[1] + 2*squareSize[1]/3, squarePos[0]+squareSize[0], squarePos[1] + 2*squareSize[1]/3)
-
-	def _update_rect(self, instance, value):
-		self.root.canvas.clear()
-		self.rect.pos = instance.pos
-		self.rect.size = instance.size
-		self.updateGrid(instance.pos, instance.size)
 
 	def FrameN(self, dt):
 		if self.pause > 0.0:
@@ -220,6 +163,7 @@ class Sudoku(App):
 
 	def UpdateText(self, board):
 		self.boardLayout.UpdateText(board)
+
 
 def Main():
 	Sudoku().run()
