@@ -45,23 +45,6 @@ class SudokuSolver:
 		global easyBoard
 		self.board = easyBoard
 		self.trialStack = deque()
- 
-	def PrintRow(self, row):
-		for col in range(9):
-			if self.board[row][col] == 0:
-				print('.', end='')
-			else:
-				print(self.board[row][col], end='')
-			if col == 5 or col == 2:
-				print('|', end='')
-		print()
-
-	def PrintBoard(self):
-		system("cls")
-		for row in range(9):
-			self.PrintRow(row)
-			if row==2 or row==5:
-				print("---+---+---")
 
 	def CanPlaceInRow(self, n, row):
 		for col in range(9):
@@ -95,54 +78,6 @@ class SudokuSolver:
 			newBoard.append(self.board[row].copy())
 		return newBoard
 
-	# SolveStep
-	#
-	# Does one step of solving the Sudoku.
-	# Returns true if stepping should continue
-	# Returns false if it is through all the loops and the algorithm should stop.
-	def SolveStep(self):
-		if (self.trialStack):
-			location = self.trialStack[-1]
-			row = location[0]
-			col = location[1]
-			trial = 1
-		else:
-			row = 0
-			col = 0
-			trial = 1
-		while row < 9:
-			while col < 9:
-				if self.board[row][col] == 0:
-					while trial < 10:
-						if self.CanPlace(trial, row, col):
-							self.board[row][col] = trial
-							self.trialStack.append((row, col, trial))	#self.Solve()
-							return True
-						trial = trial + 1
-					location = self.trialStack.pop() # Handle the 'return' from self.Solve
-					self.board[location[0]][location[1]] = 0
-					trial = location[2]
-					self.trialStack[-1][2] = self.trialStack[-1][2] + 1 # trial += 1
-					return True
-				col = col + 1
-			col = 0
-			row = row + 1
-		self.solvedBoard = self.CopyBoard()
-		return False
-
-	def Solve(self):
-		for row in range(9):
-			for col in range(9):
-				if self.board[row][col] == 0:
-					for trial in range(1, 10):
-						if self.CanPlace(trial, row, col):
-							self.board[row][col] = trial
-							self.Solve()
-					self.board[row][col] = 0
-					return
-		self.solvedBoard = self.CopyBoard()
-		return
-
 	def Generate(self):
 		for row in range(9):
 			for col in range(9):
@@ -150,11 +85,9 @@ class SudokuSolver:
 					for trial in range(1, 10):
 						if self.CanPlace(trial, row, col):
 							self.board[row][col] = trial
-							# self.PrintBoard()
 							yield 1
 							yield from self.Generate()
 					self.board[row][col] = 0
 					yield 1
 					return
-		# self.PrintBoard()
 		yield 2
