@@ -130,12 +130,44 @@ class BoardLayout(BoxLayout):
 		self.UpdateGridAndLines()
 
 
+class HeaderLayout(BoxLayout):
+	def __init__(self):
+		super().__init__(orientation='horizontal')
+		self.PlaceStuff()
+		self.bind(pos=self.update_rect, size=self.update_rect)
+
+	def PlaceStuff(self):
+		with self.canvas.before:
+			Color(0.6, .6, 0.1, 1)  # yellow; colors range from 0-1 not 0-255
+			self.rect = Rectangle(size=self.size, pos=self.pos)
+
+	def update_rect(self, instance, value):
+		instance.rect.pos = instance.pos
+		instance.rect.size = instance.size
+
+
+class FooterLayout(BoxLayout):
+	def __init__(self):
+		super().__init__(orientation='horizontal')
+		self.PlaceStuff()
+		self.bind(pos=self.update_rect, size=self.update_rect)
+
+	def PlaceStuff(self):
+		with self.canvas.before:
+			Color(0.4, .1, 0.4, 1)  # purple; colors range from 0-1 not 0-255
+			self.rect = Rectangle(size=self.size, pos=self.pos)
+
+	def update_rect(self, instance, value):
+		instance.rect.pos = instance.pos
+		instance.rect.size = instance.size
+
+
 class Sudoku(App):
 	def build(self):
 		self.root = layout = BoxLayout(orientation = 'vertical')
 
 		# header
-		self.header = BoxLayout(orientation='horizontal')
+		self.header = HeaderLayout()
 		layout.add_widget(self.header)
 
 		# board
@@ -143,7 +175,7 @@ class Sudoku(App):
 		layout.add_widget(boardLayout)
 
 		# footer
-		self.footer = BoxLayout(orientation='horizontal')
+		self.footer = FooterLayout()
 		layout.add_widget(self.footer)
 
 		self.solver = SudokuSolver()
