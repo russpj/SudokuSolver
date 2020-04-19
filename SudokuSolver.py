@@ -154,6 +154,7 @@ class SudokuSolver:
 							yield 1
 							yield from self.Generate()
 					self.board[row][col] = 0
+					yield 1
 					return
 		# self.PrintBoard()
 		yield 2

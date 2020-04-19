@@ -3,6 +3,7 @@ from kivy.app import App
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivy.graphics import Color, Ellipse, Rectangle, Line
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
@@ -53,7 +54,7 @@ class Sudoku(App):
 			self.pause = 0.0
 
 			# Clock.schedule_once(self.Frame0, 1)
-			Clock.schedule_interval(self.FrameN, 0.3)
+			Clock.schedule_interval(self.FrameN, 0.0)
 
 		return layout
 
