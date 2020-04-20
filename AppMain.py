@@ -188,6 +188,14 @@ class FooterLayout(BoxLayout):
 	def IsPaused(self):
 		return not self.running
 
+	def SetButtonsState(self, start_button_text):
+		if start_button_text == 'Pause':
+			self.running = True;
+		if start_button_text == 'Start':
+			self.running = False
+		self.UpdateStartButtonText()
+
+
 
 class Sudoku(App):
 	def build(self):
@@ -210,31 +218,28 @@ class Sudoku(App):
 		self.boardLayout.InitBoard(board)
 
 		self.generator = self.solver.Generate()
-		self.pause = 0.0
-		Clock.schedule_interval(self.FrameN, 0.1)
+		Clock.schedule_interval(self.FrameN, 0.05)
 
 		return layout
 
 	def FrameN(self, dt):
 		if dt != 0:
-			fps = 1/dt
+			fpsValue = 1/dt
 		else:
-			fps = 0
-		if self.pause > 0.0:
-			self.pause = self.pause-dt
-			self.UpdateText(self.solver.board, fps)
-			return
+			fpsValue = 0
 		if self.footer.IsPaused():
 			return
 
 		try:
 			result = next(self.generator)
-			self.UpdateText(self.solver.board, fps)
+			self.UpdateText(self.solver.board, fps=fpsValue)
 			if result == 2:
-				self.pause = 4.0
+				self.footer.SetButtonsState(start_button_text = 'Start')
 		except StopIteration:
 			# kill the timer
-			self.UpdateText(self.solver.board, fps)
+			self.footer.SetButtonsState(start_button_text = 'Start')
+			self.generator = self.solver.Generate()
+			self.UpdateText(self.solver.board, fps=fpsValue)
 
 	def UpdateText(self, board, fps):
 		self.boardLayout.UpdateText(board)
