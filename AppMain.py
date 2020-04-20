@@ -152,19 +152,38 @@ class HeaderLayout(BoxLayout):
 
 
 class FooterLayout(BoxLayout):
-	def __init__(self):
+	def __init__(self, callback):
 		super().__init__(orientation='horizontal')
-		self.PlaceStuff()
+		self.running = False
+		self.PlaceStuff(callback)
 		self.bind(pos=self.update_rect, size=self.update_rect)
 
-	def PlaceStuff(self):
+	def PlaceStuff(self, callback):
 		with self.canvas.before:
 			Color(0.4, .1, 0.4, 1)  # purple; colors range from 0-1 not 0-255
 			self.rect = Rectangle(size=self.size, pos=self.pos)
+		
+		self.startButton = Button(text='')
+		self.add_widget(self.startButton)
+		self.UpdateStartButtonText()
+		self.startButton.bind(on_press=self.HandleStartButton)
 
 	def update_rect(self, instance, value):
 		instance.rect.pos = instance.pos
 		instance.rect.size = instance.size
+
+	def HandleStartButton(self, instance):
+		self.running = not self.running
+		self.UpdateStartButtonText()
+
+	def UpdateStartButtonText(self):
+		if self.running:
+			self.startButton.text = 'Pause'
+		else:
+			self.startButton.text = 'Start'
+
+	def IsPaused(self):
+		return not self.running
 
 
 class Sudoku(App):
@@ -180,7 +199,7 @@ class Sudoku(App):
 		layout.add_widget(boardLayout)
 
 		# footer
-		self.footer = FooterLayout()
+		self.footer = FooterLayout(self.PressStartButton)
 		layout.add_widget(self.footer)
 
 		self.solver = SudokuSolver()
@@ -202,6 +221,9 @@ class Sudoku(App):
 			self.pause = self.pause-dt
 			self.UpdateText(self.solver.board, fps)
 			return
+		if self.footer.IsPaused():
+			return
+
 		try:
 			result = next(self.generator)
 			self.UpdateText(self.solver.board, fps)
@@ -214,6 +236,9 @@ class Sudoku(App):
 	def UpdateText(self, board, fps):
 		self.boardLayout.UpdateText(board)
 		self.header.UpdateFPS(fps)
+
+	def PressStartButton(self):
+		pass
 
 
 def Main():
