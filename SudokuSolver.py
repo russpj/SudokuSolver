@@ -43,8 +43,9 @@ easyBoard = [
 class SudokuSolver:
 	def __init__(self):
 		global easyBoard
+		global hardBoard
 		self.board = easyBoard
-		self.trialStack = deque()
+		self.yieldLevel = 0
 
 	def CanPlaceInRow(self, n, row):
 		for col in range(9):
@@ -77,6 +78,10 @@ class SudokuSolver:
 		for row in range(9):
 			newBoard.append(self.board[row].copy())
 		return newBoard
+
+	def ConditionalYield(self, level):
+		if (level > self.yieldLevel):
+			yield level
 
 	def Generate(self):
 		for row in range(9):
