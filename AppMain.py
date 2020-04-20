@@ -39,19 +39,20 @@ class SudokuLayout(GridLayout):
 	def InitBoard(self, board):
 		# create 81 text input boxes for the values
 		self.labels = []
-		for row in range(9):
-			rowLabels = []
-			for col in range(9):
-				number = str(board[row][col])
-				if number == "0":
-					textColor = [1, 0, 0, 1]
-					number = " "
-				else:
-					textColor = [0, 1, 0, 1]
-				squareValue = Label(text=number, color=textColor)
-				rowLabels.append(squareValue)
-				self.add_widget(squareValue)
-			self.labels.append(rowLabels)
+		with self.canvas.after:
+			for row in range(9):
+				rowLabels = []
+				for col in range(9):
+					number = str(board[row][col])
+					if number == "0":
+						textColor = [1, 0, 0, 1]
+						number = " "
+					else:
+						textColor = [0, 1, 0, 1]
+					squareValue = Label(text=number, color=textColor)
+					rowLabels.append(squareValue)
+					self.add_widget(squareValue)
+				self.labels.append(rowLabels)
 
 	def UpdateText(self, board):
 		grid=self
@@ -95,6 +96,7 @@ class BoardLayout(BoxLayout):
 		with self.canvas.before:
 			Color(0.1, .3, 0.1, 1)  # green; colors range from 0-1 not 0-255
 			self.rect = Rectangle(size=self.size, pos=self.pos)
+		with self.canvas.after:
 			self.sudokuLayout = SudokuLayout()
 
 	def UpdateGridAndLines(self):
@@ -131,8 +133,8 @@ class BoardLayout(BoxLayout):
 
 
 class HeaderLayout(BoxLayout):
-	def __init__(self):
-		super().__init__(orientation='horizontal')
+	def __init__(self, **kwargs):
+		super().__init__(orientation='horizontal', **kwargs)
 		self.PlaceStuff()
 		self.bind(pos=self.update_rect, size=self.update_rect)
 
@@ -140,8 +142,9 @@ class HeaderLayout(BoxLayout):
 		with self.canvas.before:
 			Color(0.6, .6, 0.1, 1)  # yellow; colors range from 0-1 not 0-255
 			self.rect = Rectangle(size=self.size, pos=self.pos)
-			self.fpsLabel = Label(text='0 fps', color=[0.7, 0.05, 0.7, 1])
-			self.add_widget(self.fpsLabel)
+		
+		self.fpsLabel = Label(text='0 fps', color=[0.7, 0.05, 0.7, 1])
+		self.add_widget(self.fpsLabel)
 
 	def UpdateFPS(self, fps):
 		self.fpsLabel.text = '{fpsValue:.0f} fps'.format(fpsValue=fps)
@@ -152,13 +155,13 @@ class HeaderLayout(BoxLayout):
 
 
 class FooterLayout(BoxLayout):
-	def __init__(self, callback):
-		super().__init__(orientation='horizontal')
+	def __init__(self, **kwargs):
+		super().__init__(orientation='horizontal', padding=10, **kwargs)
 		self.running = False
-		self.PlaceStuff(callback)
+		self.PlaceStuff()
 		self.bind(pos=self.update_rect, size=self.update_rect)
 
-	def PlaceStuff(self, callback):
+	def PlaceStuff(self):
 		with self.canvas.before:
 			Color(0.4, .1, 0.4, 1)  # purple; colors range from 0-1 not 0-255
 			self.rect = Rectangle(size=self.size, pos=self.pos)
@@ -191,7 +194,7 @@ class Sudoku(App):
 		self.root = layout = BoxLayout(orientation = 'vertical')
 
 		# header
-		self.header = HeaderLayout()
+		self.header = HeaderLayout(size=(100,30), size_hint=(1, None))
 		layout.add_widget(self.header)
 
 		# board
@@ -199,7 +202,7 @@ class Sudoku(App):
 		layout.add_widget(boardLayout)
 
 		# footer
-		self.footer = FooterLayout(self.PressStartButton)
+		self.footer = FooterLayout(size=(100,50), size_hint=(1, None))
 		layout.add_widget(self.footer)
 
 		self.solver = SudokuSolver()
