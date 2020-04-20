@@ -140,6 +140,11 @@ class HeaderLayout(BoxLayout):
 		with self.canvas.before:
 			Color(0.6, .6, 0.1, 1)  # yellow; colors range from 0-1 not 0-255
 			self.rect = Rectangle(size=self.size, pos=self.pos)
+			self.fpsLabel = Label(text='0 fps', color=[0.7, 0.05, 0.7, 1])
+			self.add_widget(self.fpsLabel)
+
+	def UpdateFPS(self, fps):
+		self.fpsLabel.text = '{fpsValue:.0f} fps'.format(fpsValue=fps)
 
 	def update_rect(self, instance, value):
 		instance.rect.pos = instance.pos
@@ -184,25 +189,31 @@ class Sudoku(App):
 
 		self.generator = self.solver.Generate()
 		self.pause = 0.0
-		Clock.schedule_interval(self.FrameN, 0.0)
+		Clock.schedule_interval(self.FrameN, 0.1)
 
 		return layout
 
 	def FrameN(self, dt):
+		if dt != 0:
+			fps = 1/dt
+		else:
+			fps = 0
 		if self.pause > 0.0:
 			self.pause = self.pause-dt
+			self.UpdateText(self.solver.board, fps)
 			return
 		try:
 			result = next(self.generator)
-			self.UpdateText(self.solver.board)
+			self.UpdateText(self.solver.board, fps)
 			if result == 2:
 				self.pause = 4.0
 		except StopIteration:
 			# kill the timer
-			pass
+			self.UpdateText(self.solver.board, fps)
 
-	def UpdateText(self, board):
+	def UpdateText(self, board, fps):
 		self.boardLayout.UpdateText(board)
+		self.header.UpdateFPS(fps)
 
 
 def Main():
