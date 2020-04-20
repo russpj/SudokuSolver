@@ -145,9 +145,12 @@ class HeaderLayout(BoxLayout):
 		
 		self.fpsLabel = Label(text='0 fps', color=[0.7, 0.05, 0.7, 1])
 		self.add_widget(self.fpsLabel)
+		self.positionsLabel = Label(text='0 positions tried', color=[0.7, 0.05, 0.7, 1])
+		self.add_widget(self.positionsLabel)
 
-	def UpdateFPS(self, fps):
+	def UpdateText(self, fps, positions):
 		self.fpsLabel.text = '{fpsValue:.0f} fps'.format(fpsValue=fps)
+		self.positionsLabel.text = '{positionsValue:.0f} positions tried'.format(positionsValue=positions)
 
 	def update_rect(self, instance, value):
 		instance.rect.pos = instance.pos
@@ -232,18 +235,19 @@ class Sudoku(App):
 
 		try:
 			result = next(self.generator)
-			self.UpdateText(self.solver.board, fps=fpsValue)
+			self.UpdateText(fps=fpsValue)
 			if result == 2:
 				self.footer.SetButtonsState(start_button_text = 'Start')
 		except StopIteration:
 			# kill the timer
 			self.footer.SetButtonsState(start_button_text = 'Start')
+			self.solver.Restart()
 			self.generator = self.solver.Generate()
-			self.UpdateText(self.solver.board, fps=fpsValue)
+			# self.UpdateText(fps=fpsValue)
 
-	def UpdateText(self, board, fps):
-		self.boardLayout.UpdateText(board)
-		self.header.UpdateFPS(fps)
+	def UpdateText(self, fps):
+		self.boardLayout.UpdateText(self.solver.board)
+		self.header.UpdateText(fps = fps, positions = self.solver.positionsTried)
 
 	def PressStartButton(self):
 		pass
