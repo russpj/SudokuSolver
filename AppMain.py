@@ -194,7 +194,7 @@ class Sudoku(App):
 		self.root = layout = BoxLayout(orientation = 'vertical')
 
 		# header
-		self.header = HeaderLayout(size=(100,30), size_hint=(1, None))
+		self.header = HeaderLayout(size_hint=(1, .1))
 		layout.add_widget(self.header)
 
 		# board
@@ -202,7 +202,7 @@ class Sudoku(App):
 		layout.add_widget(boardLayout)
 
 		# footer
-		self.footer = FooterLayout(size=(100,50), size_hint=(1, None))
+		self.footer = FooterLayout(size_hint=(1, .2))
 		layout.add_widget(self.footer)
 
 		self.solver = SudokuSolver()
