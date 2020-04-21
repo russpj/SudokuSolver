@@ -1,7 +1,7 @@
-from time import sleep
-from os import system
-from collections import deque
+# SudokuSolver.py
 
+# Creates the SudokuSolver class, which has a recursive descent with 
+# backtracking Sudoku solver
 
 class SudokuSolver:
 	def __init__(self, board, yieldLevel=0):
