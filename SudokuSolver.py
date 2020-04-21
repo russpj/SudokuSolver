@@ -50,8 +50,9 @@ class SudokuSolver:
 	def Restart(self):
 		self.positionsTried = 0
 
-	def ConditionalYield(self, level):
-		self.positionsTried = self.positionsTried + 1
+	def ConditionalYield(self, level, updateTried=True):
+		if updateTried:
+			self.positionsTried = self.positionsTried + 1
 		if level > self.yieldLevel:
 			yield level
 
@@ -65,6 +66,6 @@ class SudokuSolver:
 							yield from self.ConditionalYield(1)
 							yield from self.Generate()
 					self.board[row][col] = 0
-					yield from self.ConditionalYield(1)
+					yield from self.ConditionalYield(1, updateTried=False)
 					return
 		yield from self.ConditionalYield(2)

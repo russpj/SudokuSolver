@@ -248,7 +248,7 @@ class Sudoku(App):
 		self.boardLayout.InitBoard(board)
 
 		self.generator = self.solver.Generate()
-		Clock.schedule_interval(self.FrameN, 0.05)
+		Clock.schedule_interval(self.FrameN, 0.0)
 
 		return layout
 
@@ -275,9 +275,6 @@ class Sudoku(App):
 	def UpdateText(self, fps):
 		self.boardLayout.UpdateText(self.solver.board)
 		self.header.UpdateText(fps = fps, positions = self.solver.positionsTried)
-
-	def PressStartButton(self):
-		pass
 
 
 def Main():
