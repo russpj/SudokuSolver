@@ -3,22 +3,10 @@ from os import system
 from collections import deque
 
 
-simpleSudoku = [
-	[1, 2, 3, 4, 5, 6, 7, 8, 9],
-	[4, 5, 6, 7, 8, 9, 1, 2, 3],
-	[7, 8, 9, 1, 2, 3, 4, 5, 6],
-	[2, 3, 4, 5, 6, 7, 8, 9, 1],
-	[5, 6, 7, 8, 9, 1, 2, 3, 4],
-	[8, 9, 1, 2, 3, 4, 5, 6, 7],
-	[3, 4, 5, 6, 7, 8, 9, 1, 2],
-	[6, 7, 8, 9, 1, 2, 3, 4, 5],
-	[9, 1, 2, 3, 4, 5, 6, 7, 8],
-	]
-
 class SudokuSolver:
-	def __init__(self, board):
+	def __init__(self, board, yieldLevel=0):
 		self.board = board
-		self.yieldLevel = 0
+		self.yieldLevel = yieldLevel
 		self.positionsTried = 0
 
 	def CanPlaceInRow(self, n, row):
