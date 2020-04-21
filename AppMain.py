@@ -10,6 +10,31 @@ from kivy.uix.button import Button
 from kivy.clock import Clock
 from SudokuSolver import SudokuSolver
 
+hardBoard = [
+	[0,0,0,4,0,6,0,0,0],
+	[7,0,0,2,0,0,0,9,0],
+	[0,0,0,0,5,3,0,0,4],
+	[0,1,3,0,0,0,0,4,9],
+	[0,0,0,0,0,0,0,0,0],
+	[0,0,4,5,0,0,0,0,2],
+	[3,7,0,0,6,0,0,1,0],
+	[5,0,0,0,0,0,0,0,0],
+	[0,2,0,0,0,0,7,0,0]
+	]
+
+easyBoard = [
+	[0,0,0,0,0,4,6,7,0],
+	[0,0,9,2,0,0,8,0,1],
+	[0,0,7,6,1,3,0,4,9],
+	[0,5,0,1,0,0,2,8,4],
+	[0,1,0,0,0,0,3,9,6],
+	[4,9,6,8,0,0,0,5,0],
+	[3,0,0,0,6,1,0,2,0],
+	[0,8,5,4,0,0,0,6,0],
+	[9,0,0,0,7,8,0,0,0],
+	]
+
+
 class SudokuLayout(GridLayout):
 	def __init__(self):
 		super().__init__(cols=9)
@@ -216,7 +241,9 @@ class Sudoku(App):
 		self.footer = FooterLayout(size_hint=(1, .2))
 		layout.add_widget(self.footer)
 
-		self.solver = SudokuSolver()
+		global easyBoard
+		global hardBoard
+		self.solver = SudokuSolver(easyBoard)
 		board = self.solver.board
 		self.boardLayout.InitBoard(board)
 
