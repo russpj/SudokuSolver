@@ -243,7 +243,7 @@ class Sudoku(App):
 
 		global easyBoard
 		global hardBoard
-		self.solver = SudokuSolver(easyBoard)
+		self.solver = SudokuSolver(easyBoard, yieldLevel=0)
 		board = self.solver.board
 		self.boardLayout.InitBoard(board)
 
@@ -267,14 +267,16 @@ class Sudoku(App):
 				self.footer.SetButtonsState(start_button_text = 'Start')
 		except StopIteration:
 			# kill the timer
+			self.UpdateText(fps=fpsValue, updatePositions = self.footer.IsPaused)
 			self.footer.SetButtonsState(start_button_text = 'Start')
 			self.solver.Restart()
 			self.generator = self.solver.Generate()
-			# self.UpdateText(fps=fpsValue)
+			
 
-	def UpdateText(self, fps):
+	def UpdateText(self, fps, updatePositions = True):
 		self.boardLayout.UpdateText(self.solver.board)
-		self.header.UpdateText(fps = fps, positions = self.solver.positionsTried)
+		if updatePositions:
+			self.header.UpdateText(fps = fps, positions = self.solver.positionsTried)
 
 
 def Main():
