@@ -260,9 +260,14 @@ class HeaderLayout(BoxLayout):
 
 
 class FooterLayout(BoxLayout):
-	def __init__(self, start_button_callback=None, **kwargs):
+	def __init__(
+			self, 
+			start_button_callback=None, 
+			speed_button_callback=None, 
+			**kwargs):
 		super().__init__(orientation='horizontal', padding=10, **kwargs)
 		self.start_button_callback=start_button_callback
+		self.speed_button_callback=speed_button_callback
 		self.PlaceStuff()
 		self.bind(pos=self.update_rect, size=self.update_rect)
 
@@ -271,6 +276,9 @@ class FooterLayout(BoxLayout):
 			Color(0.4, .1, 0.4, 1)  # purple; colors range from 0-1 not 0-255
 			self.rect = Rectangle(size=self.size, pos=self.pos)
 		
+		self.speedButton = Button()
+		self.add_widget(self.speedButton)
+		self.speedButton.bind(on_press=self.speed_button_callback)
 		self.startButton = Button(text='')
 		self.add_widget(self.startButton)
 		self.startButton.bind(on_press=self.start_button_callback)
@@ -284,6 +292,9 @@ class FooterLayout(BoxLayout):
 		startInfo = appInfo.startInfo
 		self.startButton.text = startInfo.text
 		self.startButton.disabled = not startInfo.enabled
+		speedInfo = appInfo.speedInfo
+		self.speedButton.text = speedInfo.text
+		self.speedButton.disabled = not speedInfo.enabled
 
 
 class Sudoku(App):
@@ -299,7 +310,9 @@ class Sudoku(App):
 		layout.add_widget(boardLayout)
 
 		# footer
-		self.footer = FooterLayout(size_hint=(1, .2), start_button_callback=self.StartButtonCallback)
+		self.footer = FooterLayout(size_hint=(1, .2), 
+														 start_button_callback=self.StartButtonCallback,
+														 speed_button_callback=self.SpeedButtonCallback)
 		layout.add_widget(self.footer)
 
 		global easyBoard
@@ -361,9 +374,18 @@ class Sudoku(App):
 		if self.state==AppState.Paused:
 			self.StartClock()
 		if self.state==AppState.Finished:
-			self.boardLayout.Reset()
+			self.Reset()
 		self.state = nextState[self.state]
 		self.UpdateUX()
+
+	def SpeedButtonCallback(self, instance):
+		self.speed = nextSpeed[self.speed]
+		self.UpdateUX()
+
+	def Reset(self):
+		self.boardLayout.Reset()
+		self.solver.positionsTried = 0
+
 
 
 def Main():
