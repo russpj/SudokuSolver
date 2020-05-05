@@ -235,24 +235,28 @@ class BoardLayout(BoxLayout):
 
 
 class HeaderLayout(BoxLayout):
-	def __init__(self, **kwargs):
+	def __init__(self, speed='', **kwargs):
 		super().__init__(orientation='horizontal', **kwargs)
-		self.PlaceStuff()
+		self.PlaceStuff(speed)
 		self.bind(pos=self.update_rect, size=self.update_rect)
 
-	def PlaceStuff(self):
+	def PlaceStuff(self, speed):
 		with self.canvas.before:
 			Color(0.6, .6, 0.1, 1)  # yellow; colors range from 0-1 not 0-255
 			self.rect = Rectangle(size=self.size, pos=self.pos)
 		
+		self.speedLabel = Label(text='', color=[0.7, 0.05, 0.7, 1])
+		self.add_widget(self.speedLabel)
 		self.fpsLabel = Label(text='0 fps', color=[0.7, 0.05, 0.7, 1])
 		self.add_widget(self.fpsLabel)
 		self.positionsLabel = Label(text='0 positions tried', color=[0.7, 0.05, 0.7, 1])
 		self.add_widget(self.positionsLabel)
+		self.UpdateText(0, 0, speed)
 
-	def UpdateText(self, fps, positions):
+	def UpdateText(self, fps, positions, speed):
 		self.fpsLabel.text = '{fpsValue:.0f} fps'.format(fpsValue=fps)
 		self.positionsLabel.text = '{positionsValue:.0f} positions tried'.format(positionsValue=positions)
+		self.speedLabel.text = 'Speed: {speed}'.format(speed=speed)
 
 	def update_rect(self, instance, value):
 		instance.rect.pos = instance.pos
@@ -301,8 +305,11 @@ class Sudoku(App):
 	def build(self):
 		self.root = layout = BoxLayout(orientation = 'vertical')
 
+		self.speed = Speed.Fast
+		self.state=AppState.Ready
+
 		# header
-		self.header = HeaderLayout(size_hint=(1, .1))
+		self.header = HeaderLayout(size_hint=(1, .1), speed=infoFromSpeed[self.speed].statusText)
 		layout.add_widget(self.header)
 
 		# board
@@ -320,9 +327,6 @@ class Sudoku(App):
 		self.solver = SudokuSolver(easyBoard, yieldLevel=0)
 		board = self.solver.board
 		self.boardLayout.InitBoard(board)
-
-		self.speed = Speed.Fast
-		self.state=AppState.Ready
 
 		return layout
 
@@ -363,7 +367,10 @@ class Sudoku(App):
 
 	def UpdateText(self, fps, positions=True):
 		self.boardLayout.UpdateText(self.solver.board)
-		self.header.UpdateText(fps=fps, positions=self.solver.positionsTried)
+		self.header.UpdateText(
+			fps=fps, 
+			positions=self.solver.positionsTried,
+			speed=infoFromSpeed[self.speed].statusText)
 
 	def StartButtonCallback(self, instance):
 		if self.state==AppState.Ready:
