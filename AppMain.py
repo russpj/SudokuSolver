@@ -1,3 +1,4 @@
+from enum import Enum
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
@@ -31,6 +32,81 @@ easyBoard = [
 	[0,8,5,4,0,0,0,6,0],
 	[9,0,0,0,7,8,0,0,0],
 	]
+
+
+class AppState(Enum):
+	Ready = 1
+	Running = 2
+	Paused = 3
+	Finished = 5
+
+nextState={
+	AppState.Ready: AppState.Running,
+	AppState.Running: AppState.Paused,
+	AppState.Paused: AppState.Running,
+	AppState.Finished: AppState.Ready
+	}
+
+
+class Speed(Enum):
+	Slow=1
+	Medium=2
+	Fast=3
+	Ludicrous=4
+
+nextSpeed={
+	Speed.Slow: Speed.Medium,
+	Speed.Medium: Speed.Fast,
+	Speed.Fast: Speed.Ludicrous,
+	Speed.Ludicrous: Speed.Slow
+	}
+
+class SpeedInfo:
+	def __init__(self, statusText='', fps=0):
+		self.statusText=statusText
+		self.fps=fps
+
+infoFromSpeed = {
+	Speed.Slow: SpeedInfo(statusText='Slow', fps=1),
+	Speed.Medium: SpeedInfo(statusText='Medium', fps=10),
+	Speed.Fast: SpeedInfo(statusText='High', fps=100),
+	Speed.Ludicrous: SpeedInfo(statusText='Ludicrous', fps=100)
+	}
+
+
+class ButtonInfo:
+	def __init__(self, enabled=True, text=''):
+		self.enabled = enabled
+		self.text=text
+
+class AppInfo:
+	def __init__(self, statusText='', 
+							startInfo=ButtonInfo(),
+							difficultyInfo=ButtonInfo(),
+							speedInfo=ButtonInfo()):
+		self.statusText=statusText
+		self.startInfo=startInfo
+		self.difficultyInfo=difficultyInfo
+		self.speedInfo=speedInfo
+
+infoFromState = {
+	AppState.Ready: AppInfo(statusText='{difficulty}', 
+												 startInfo=ButtonInfo(text='Start', enabled=True),
+												 difficultyInfo=ButtonInfo(text='Change difficulty', enabled=True),
+												 speedInfo=ButtonInfo(text='Change Speed', enabled=True)),
+	AppState.Running: AppInfo(statusText='{difficulty} Running', 
+												 startInfo=ButtonInfo(text='Pause', enabled=True),
+												 difficultyInfo=ButtonInfo(text='Change difficulty', enabled=False),
+												 speedInfo=ButtonInfo(text='Change Speed', enabled=False)),
+	AppState.Paused: AppInfo(statusText='{difficulty} Paused', 
+												 startInfo=ButtonInfo(text='Resume', enabled=True),
+												 difficultyInfo=ButtonInfo(text='Change difficulty', enabled=False),
+												 speedInfo=ButtonInfo(text='Change Speed', enabled=True)),
+	AppState.Finished: AppInfo(statusText='{difficulty} Done', 
+												 startInfo=ButtonInfo(text='Reset', enabled=True),
+												 difficultyInfo=ButtonInfo(text='Change difficulty', enabled=False),
+												 speedInfo=ButtonInfo(text='Change Speed', enabled=False))
+	}
 
 
 class SudokuLayout(GridLayout):
@@ -149,6 +225,9 @@ class BoardLayout(BoxLayout):
 	def UpdateText(self, board):
 		self.sudokuLayout.UpdateText(board)
 
+	def Reset(self):
+		pass
+
 	def update_rect(self, instance, value):
 		instance.rect.pos = instance.pos
 		instance.rect.size = instance.size
@@ -181,9 +260,9 @@ class HeaderLayout(BoxLayout):
 
 
 class FooterLayout(BoxLayout):
-	def __init__(self, **kwargs):
+	def __init__(self, start_button_callback=None, **kwargs):
 		super().__init__(orientation='horizontal', padding=10, **kwargs)
-		self.running = False
+		self.start_button_callback=start_button_callback
 		self.PlaceStuff()
 		self.bind(pos=self.update_rect, size=self.update_rect)
 
@@ -194,33 +273,17 @@ class FooterLayout(BoxLayout):
 		
 		self.startButton = Button(text='')
 		self.add_widget(self.startButton)
-		self.UpdateStartButtonText()
-		self.startButton.bind(on_press=self.HandleStartButton)
+		self.startButton.bind(on_press=self.start_button_callback)
+		self.UpdateButtons()
 
 	def update_rect(self, instance, value):
 		instance.rect.pos = instance.pos
 		instance.rect.size = instance.size
 
-	def HandleStartButton(self, instance):
-		self.running = not self.running
-		self.UpdateStartButtonText()
-
-	def UpdateStartButtonText(self):
-		if self.running:
-			self.startButton.text = 'Pause'
-		else:
-			self.startButton.text = 'Start'
-
-	def IsPaused(self):
-		return not self.running
-
-	def SetButtonsState(self, start_button_text):
-		if start_button_text == 'Pause':
-			self.running = True;
-		if start_button_text == 'Start':
-			self.running = False
-		self.UpdateStartButtonText()
-
+	def UpdateButtons(self, appInfo=infoFromState[AppState.Ready]):
+		startInfo = appInfo.startInfo
+		self.startButton.text = startInfo.text
+		self.startButton.disabled = not startInfo.enabled
 
 
 class Sudoku(App):
@@ -236,7 +299,7 @@ class Sudoku(App):
 		layout.add_widget(boardLayout)
 
 		# footer
-		self.footer = FooterLayout(size_hint=(1, .2))
+		self.footer = FooterLayout(size_hint=(1, .2), start_button_callback=self.StartButtonCallback)
 		layout.add_widget(self.footer)
 
 		global easyBoard
@@ -245,36 +308,61 @@ class Sudoku(App):
 		board = self.solver.board
 		self.boardLayout.InitBoard(board)
 
-		self.generator = self.solver.Generate()
-		Clock.schedule_interval(self.FrameN, 0.0)
+		self.speed = Speed.Fast
+		self.state=AppState.Ready
 
 		return layout
 
 	def FrameN(self, dt):
+		if self.generator is None:
+			return
+		if (self.state==AppState.Finished or self.state==AppState.Ready):
+			return
+		if self.state==AppState.Paused:
+			return
 		if dt != 0:
 			fpsValue = 1/dt
 		else:
 			fpsValue = 0
-		if self.footer.IsPaused():
-			return
 
 		try:
 			result = next(self.generator)
-			self.UpdateText(fps=fpsValue)
 			if result == 2:
-				self.footer.SetButtonsState(start_button_text = 'Start')
+				self.state = AppState.Paused
+			self.UpdateUX(fps=fpsValue)
 		except StopIteration:
-			# kill the timer
-			self.UpdateText(fps=fpsValue, updatePositions = self.footer.IsPaused)
-			self.footer.SetButtonsState(start_button_text = 'Start')
-			self.solver.Restart()
-			self.generator = self.solver.Generate()
+			self.state=AppState.Finished
+			self.clock.cancel()
+			self.generator=None
+			self.UpdateUX(fps=fpsValue)
 			
 
-	def UpdateText(self, fps, updatePositions = True):
+	def StartClock(self):
+		self.clock = Clock.schedule_interval(self.FrameN, 1.0/infoFromSpeed[self.speed].fps)
+
+	def UpdateUX(self, fps=0):
+		state = self.state
+		speed = self.speed
+		appInfo = infoFromState[self.state]
+		self.UpdateText(fps=fps, positions=self.solver.positionsTried)
+		self.footer.UpdateButtons(appInfo=appInfo)
+
+	def UpdateText(self, fps, positions=True):
 		self.boardLayout.UpdateText(self.solver.board)
-		if updatePositions:
-			self.header.UpdateText(fps = fps, positions = self.solver.positionsTried)
+		self.header.UpdateText(fps=fps, positions=self.solver.positionsTried)
+
+	def StartButtonCallback(self, instance):
+		if self.state==AppState.Ready:
+			self.generator = self.solver.Generate()
+			self.StartClock()
+		if self.state==AppState.Running:
+			self.clock.cancel()
+		if self.state==AppState.Paused:
+			self.StartClock()
+		if self.state==AppState.Finished:
+			self.boardLayout.Reset()
+		self.state = nextState[self.state]
+		self.UpdateUX()
 
 
 def Main():
