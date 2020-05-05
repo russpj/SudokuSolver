@@ -329,6 +329,7 @@ class Sudoku(App):
 			result = next(self.generator)
 			if result == 2:
 				self.state = AppState.Paused
+				self.clock.cancel()
 			self.UpdateUX(fps=fpsValue)
 		except StopIteration:
 			self.state=AppState.Finished
