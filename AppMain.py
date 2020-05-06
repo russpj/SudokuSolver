@@ -48,6 +48,25 @@ nextState={
 	}
 
 
+class Difficulty(Enum):
+	Easy=1
+	Hard=2
+
+nextDifficulty={
+	Difficulty.Easy: Difficulty.Hard,
+	Difficulty.Hard: Difficulty.Easy
+	}
+
+class DifficultyInfo:
+	def __init__(self, statusText='', *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self.statusText = statusText
+
+infoFromDifficulty = {
+	Difficulty.Easy: DifficultyInfo(statusText='Easy'),
+	Difficulty.Hard: DifficultyInfo(statusText='Hard')
+	}
+
 class Speed(Enum):
 	Slow=1
 	Medium=2
@@ -235,28 +254,31 @@ class BoardLayout(BoxLayout):
 
 
 class HeaderLayout(BoxLayout):
-	def __init__(self, speed='', **kwargs):
+	def __init__(self, speed='', difficulty='', **kwargs):
 		super().__init__(orientation='horizontal', **kwargs)
-		self.PlaceStuff(speed)
+		self.PlaceStuff(speed, difficulty)
 		self.bind(pos=self.update_rect, size=self.update_rect)
 
-	def PlaceStuff(self, speed):
+	def PlaceStuff(self, speed, difficulty):
 		with self.canvas.before:
 			Color(0.6, .6, 0.1, 1)  # yellow; colors range from 0-1 not 0-255
 			self.rect = Rectangle(size=self.size, pos=self.pos)
 		
 		self.speedLabel = Label(text='', color=[0.7, 0.05, 0.7, 1])
 		self.add_widget(self.speedLabel)
+		self.difficultyLabel = Label(text='', color=[0.7, 0.05, 0.7, 1])
+		self.add_widget(self.difficultyLabel)
 		self.fpsLabel = Label(text='0 fps', color=[0.7, 0.05, 0.7, 1])
 		self.add_widget(self.fpsLabel)
 		self.positionsLabel = Label(text='0 positions tried', color=[0.7, 0.05, 0.7, 1])
 		self.add_widget(self.positionsLabel)
-		self.UpdateText(0, 0, speed)
+		self.UpdateText(0, 0, speed, difficulty)
 
-	def UpdateText(self, fps, positions, speed):
+	def UpdateText(self, fps, positions, speed, difficulty):
 		self.fpsLabel.text = '{fpsValue:.0f} fps'.format(fpsValue=fps)
 		self.positionsLabel.text = '{positionsValue:.0f} positions tried'.format(positionsValue=positions)
 		self.speedLabel.text = 'Speed: {speed}'.format(speed=speed)
+		self.difficultyLabel.text = difficulty
 
 	def update_rect(self, instance, value):
 		instance.rect.pos = instance.pos
@@ -306,10 +328,14 @@ class Sudoku(App):
 		self.root = layout = BoxLayout(orientation = 'vertical')
 
 		self.speed = Speed.Fast
-		self.state=AppState.Ready
+		self.state = AppState.Ready
+		self.difficulty = Difficulty.Easy
 
 		# header
-		self.header = HeaderLayout(size_hint=(1, .1), speed=infoFromSpeed[self.speed].statusText)
+		self.header = HeaderLayout(
+			size_hint=(1, .1), 
+			speed=infoFromSpeed[self.speed].statusText,
+			difficulty=infoFromDifficulty[self.difficulty].statusText)
 		layout.add_widget(self.header)
 
 		# board
@@ -322,13 +348,18 @@ class Sudoku(App):
 														 speed_button_callback=self.SpeedButtonCallback)
 		layout.add_widget(self.footer)
 
-		global easyBoard
-		global hardBoard
-		self.solver = SudokuSolver(easyBoard, yieldLevel=0)
+		self.solver = self.SolverFromDifficulty()
 		board = self.solver.board
 		self.boardLayout.InitBoard(board)
 
 		return layout
+
+	def SolverFromDifficulty(self):
+		if self.difficulty == Difficulty.Easy:
+			board = easyBoard
+		else:
+			board = hardBoard
+		return SudokuSolver(board, yieldLevel=0)
 
 	def FrameN(self, dt):
 		if self.generator is None:
@@ -370,7 +401,8 @@ class Sudoku(App):
 		self.header.UpdateText(
 			fps=fps, 
 			positions=self.solver.positionsTried,
-			speed=infoFromSpeed[self.speed].statusText)
+			speed=infoFromSpeed[self.speed].statusText,
+			difficulty=infoFromDifficulty[self.difficulty].statusText)
 
 	def StartButtonCallback(self, instance):
 		if self.state==AppState.Ready:
