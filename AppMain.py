@@ -396,7 +396,10 @@ class Sudoku(App):
 			fpsValue = 0
 
 		try:
-			result = next(self.generator)
+			while True:
+				result = next(self.generator)
+				if self.speed != Speed.Ludicrous or result == 2:
+					break
 			if result == 2:
 				self.state = AppState.Paused
 				self.clock.cancel()
