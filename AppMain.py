@@ -348,7 +348,7 @@ class Sudoku(App):
 	def build(self):
 		self.root = layout = BoxLayout(orientation = 'vertical')
 
-		self.speed = Speed.Fast
+		self.speed = Speed.Slow
 		self.state = AppState.Ready
 		self.difficulty = Difficulty.Easy
 
