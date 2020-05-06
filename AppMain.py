@@ -166,9 +166,13 @@ class SudokuLayout(GridLayout):
 				rowLabels = []
 				for col in range(9):
 					squareValue = Label()
+					squareValue.bind(pos=self.update_labels, size=self.update_labels)
 					rowLabels.append(squareValue)
 					self.add_widget(squareValue)
 				self.labels.append(rowLabels)
+
+	def update_labels(self, instance, value):
+		instance.font_size = instance.size[1]*3/4
 
 	def ResetLabels(self, board):
 		for row in range(len(self.labels)):
