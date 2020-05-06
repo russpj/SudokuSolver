@@ -155,22 +155,33 @@ class SudokuLayout(GridLayout):
 				self.hlines.append(Line())
 
 	def InitBoard(self, board):
+		self.CreateLabels()
+		self.ResetLabels(board)
+
+	def CreateLabels(self):
 		# create 81 text input boxes for the values
 		self.labels = []
 		with self.canvas.after:
 			for row in range(9):
 				rowLabels = []
 				for col in range(9):
-					number = str(board[row][col])
-					if number == "0":
-						textColor = [1, 0, 0, 1]
-						number = " "
-					else:
-						textColor = [0, 1, 0, 1]
-					squareValue = Label(text=number, color=textColor)
+					squareValue = Label()
 					rowLabels.append(squareValue)
 					self.add_widget(squareValue)
 				self.labels.append(rowLabels)
+
+	def ResetLabels(self, board):
+		for row in range(len(self.labels)):
+			for col in range(len(self.labels[row])):
+				label = self.labels[row][col]
+				number = str(board[row][col])
+				if number == "0":
+					textColor = [1, 0, 0, 1]
+					number = " "
+				else:
+					textColor = [0, 1, 0, 1]
+				label.text = number
+				label.color = textColor
 
 	def UpdateText(self, board):
 		grid=self
@@ -244,8 +255,8 @@ class BoardLayout(BoxLayout):
 	def UpdateText(self, board):
 		self.sudokuLayout.UpdateText(board)
 
-	def Reset(self):
-		pass
+	def Reset(self, board):
+		self.sudokuLayout.ResetLabels(board)
 
 	def update_rect(self, instance, value):
 		instance.rect.pos = instance.pos
@@ -290,10 +301,12 @@ class FooterLayout(BoxLayout):
 			self, 
 			start_button_callback=None, 
 			speed_button_callback=None, 
+			difficulty_button_callback=None, 
 			**kwargs):
 		super().__init__(orientation='horizontal', padding=10, **kwargs)
 		self.start_button_callback=start_button_callback
 		self.speed_button_callback=speed_button_callback
+		self.difficulty_button_callback=difficulty_button_callback
 		self.PlaceStuff()
 		self.bind(pos=self.update_rect, size=self.update_rect)
 
@@ -305,6 +318,9 @@ class FooterLayout(BoxLayout):
 		self.speedButton = Button()
 		self.add_widget(self.speedButton)
 		self.speedButton.bind(on_press=self.speed_button_callback)
+		self.difficultyButton = Button()
+		self.add_widget(self.difficultyButton)
+		self.difficultyButton.bind(on_press=self.difficulty_button_callback)
 		self.startButton = Button(text='')
 		self.add_widget(self.startButton)
 		self.startButton.bind(on_press=self.start_button_callback)
@@ -318,6 +334,11 @@ class FooterLayout(BoxLayout):
 		startInfo = appInfo.startInfo
 		self.startButton.text = startInfo.text
 		self.startButton.disabled = not startInfo.enabled
+
+		difficultyInfo = appInfo.difficultyInfo
+		self.difficultyButton.text = difficultyInfo.text
+		self.difficultyButton.disabled = not difficultyInfo.enabled
+
 		speedInfo = appInfo.speedInfo
 		self.speedButton.text = speedInfo.text
 		self.speedButton.disabled = not speedInfo.enabled
@@ -345,7 +366,8 @@ class Sudoku(App):
 		# footer
 		self.footer = FooterLayout(size_hint=(1, .2), 
 														 start_button_callback=self.StartButtonCallback,
-														 speed_button_callback=self.SpeedButtonCallback)
+														 speed_button_callback=self.SpeedButtonCallback,
+														 difficulty_button_callback=self.DifficultyButtonCallback)
 		layout.add_widget(self.footer)
 
 		self.solver = self.SolverFromDifficulty()
@@ -421,9 +443,15 @@ class Sudoku(App):
 		self.speed = nextSpeed[self.speed]
 		self.UpdateUX()
 
+	def DifficultyButtonCallback(self, instance):
+		self.difficulty = nextDifficulty[self.difficulty]
+		self.solver = self.SolverFromDifficulty()
+		self.boardLayout.Reset(self.solver.board)
+		self.UpdateUX()
+
 	def Reset(self):
-		self.boardLayout.Reset()
 		self.solver.positionsTried = 0
+		self.boardLayout.Reset(self.solver.board)
 
 
 
