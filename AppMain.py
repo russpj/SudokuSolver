@@ -8,6 +8,7 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.clock import Clock
 from SudokuSolver import SudokuSolver
+from Puzzle import ParsePuzzleStrings
 
 hardBoard = [
 	[0,0,0,4,0,6,0,0,0],
@@ -33,7 +34,7 @@ easyBoard = [
 	[9,0,0,0,7,8,0,0,0],
 	]
 
-puzzles = [
+puzzlesNo = [
 	('Easy', [
 	[0,0,0,0,0,4,6,7,0],
 	[0,0,9,2,0,0,8,0,1],
@@ -60,6 +61,7 @@ puzzles = [
    )
    ]
 
+puzzles = ParsePuzzleStrings()
 
 class AppState(Enum):
 	Ready = 1
