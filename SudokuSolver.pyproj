@@ -21,6 +21,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Puzzle.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SudokuSolver.py">
       <SubType>Code</SubType>
     </Compile>
