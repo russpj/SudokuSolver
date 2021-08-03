@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>a02eb1e3-e162-4415-a21e-4a6feab97dbe</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>AppMain.py</StartupFile>
+    <StartupFile>SolveAll.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

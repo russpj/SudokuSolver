@@ -1,12 +1,14 @@
 # SolveAll.py
 # solve all of the puzzles and report the solutions
 
+from time import time
 from Puzzle import ParsePuzzleStrings
 from SudokuSolver import SudokuSolver
 
 def Main():
 	puzzles = ParsePuzzleStrings()
 	keySum = 0
+	startTime = time()
 	for puzzle in puzzles:
 		board = puzzle[1]
 		trials = 0
@@ -20,7 +22,8 @@ def Main():
 				key = line[0]*100 + line[1]*10 + line[2]
 				keySum += key
 				print("After {} trials, we found a solution for {} with a key: {}".format(trials, puzzle[0], key))
-	print("The final sum of keys is {}".format(keySum))	
+	endTime = time()
+	print("After {} seconds, the final sum of keys is {}".format(endTime-startTime, keySum))	
 
 if __name__ == '__main__':
 	Main()
