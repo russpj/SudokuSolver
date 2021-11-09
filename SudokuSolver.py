@@ -3,11 +3,27 @@
 # Creates the SudokuSolver class, which has a recursive descent with 
 # backtracking Sudoku solver
 
+
+class Square:
+	def __init__(self, row, column):
+		self.row = row
+		self.col = column
+
+
+def EmptySquares(board):
+	squares = []
+	for row in range(len(board)):
+		for col in range(len(board[0])):
+			if board[row][col] == 0:
+				squares.append(Square(row, col))
+	return squares
+
 class SudokuSolver:
 	def __init__(self, board, yieldLevel=0):
 		self.board = board
 		self.yieldLevel = yieldLevel
 		self.positionsTried = 0
+		self.squares = EmptySquares(board)
 
 	def CanPlaceInRow(self, n, row):
 		for col in range(9):
