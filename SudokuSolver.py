@@ -61,15 +61,16 @@ class SudokuSolver:
 			yield level
 
 	def Generate(self):
-		for row in range(9):
-			for col in range(9):
-				if self.board[row][col] == 0:
-					for trial in range(1, 10):
-						if self.CanPlace(trial, row, col):
-							self.board[row][col] = trial
-							yield from self.ConditionalYield(1)
-							yield from self.Generate()
-					self.board[row][col] = 0
-					yield from self.ConditionalYield(1, updateTried=False)
-					return
+		for square in self.squares:
+			row = square.row
+			col = square.col
+			if self.board[row][col] == 0:
+				for trial in range(1, 10):
+					if self.CanPlace(trial, row, col):
+						self.board[row][col] = trial
+						yield from self.ConditionalYield(1)
+						yield from self.Generate()
+				self.board[row][col] = 0
+				yield from self.ConditionalYield(1, updateTried=False)
+				return
 		yield from self.ConditionalYield(2)
