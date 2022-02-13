@@ -3,6 +3,7 @@
 # Creates the SudokuSolver class, which has a recursive descent with 
 # backtracking Sudoku solver
 
+from random import shuffle
 
 class Square:
 	def __init__(self, row, column):
@@ -16,6 +17,8 @@ def EmptySquares(board):
 		for col in range(len(board[0])):
 			if board[row][col] == 0:
 				squares.append(Square(row, col))
+
+	shuffle(squares)
 	return squares
 
 class SudokuSolver:
