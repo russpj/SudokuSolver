@@ -5,7 +5,6 @@
 
 from random import shuffle
 from math import sqrt
-import this
 
 class Square:
 	def __init__(self, row, column):
@@ -14,29 +13,30 @@ class Square:
 
 
 def ScoreRow(board, row):
-	score = 0
+	score = set()
 	for col in range(len(board[0])):
 		if board[row][col] != 0:
-			score += 1
+			score.add(board[row][col])
 	return score
 
+
 def ScoreColumn(board, col):
-	score = 0
+	score = set()
 	for row in range(len(board)):
 		if board[row][col] != 0:
-			score += 1
+			score.add(board[row][col])
 	return score
 
 
 def ScoreSection(board, square):
-	score = 0
+	score = set()
 	sizeSection = int(sqrt(len(board))+0.5)
 	firstRow = (square.row//sizeSection)*3
 	firstCol = (square.col//sizeSection)*3
 	for row in range(firstRow, firstRow+sizeSection):
 		for col in range(firstCol, firstCol+sizeSection):
 			if board[row][col] != 0:
-				score += 1
+				score.add(board[row][col])
 	return score
 
 
@@ -44,11 +44,11 @@ def ScoreSquare(board, square):
 	if board[square.row][square.col] != 0:
 		return 0
 
-	score = 0
-	score += ScoreRow(board, square.row)
-	score += ScoreColumn(board, square.col)
-	score += ScoreSection(board, square)
-	return score
+	score = set()
+	score |= ScoreRow(board, square.row)
+	score |= ScoreColumn(board, square.col)
+	score |= ScoreSection(board, square)
+	return len(score)
 
 
 def BringMaxToFront(board, squares, first, last):
