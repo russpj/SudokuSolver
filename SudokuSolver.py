@@ -102,7 +102,8 @@ class SudokuSolver:
 			yield level
 
 	def Generate(self):
-		for square in self.squares:
+		for index in range(len(self.squares)):
+			square = self.squares[index]
 			row = square.row
 			col = square.col
 			if self.board[row][col] == 0:
@@ -110,6 +111,7 @@ class SudokuSolver:
 					if self.CanPlace(trial, row, col):
 						self.board[row][col] = trial
 						yield from self.ConditionalYield(1)
+						self.squares[index + 1:] = sorted(self.squares[index +1:], key = lambda square: -ScoreSquare(self.board, square))
 						yield from self.Generate()
 				self.board[row][col] = 0
 				yield from self.ConditionalYield(1, updateTried=False)
