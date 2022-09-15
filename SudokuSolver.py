@@ -5,6 +5,7 @@
 
 from random import shuffle
 from math import sqrt
+import this
 
 class Square:
 	def __init__(self, row, column):
@@ -49,6 +50,17 @@ def ScoreSquare(board, square):
 	score += ScoreSection(board, square)
 	return score
 
+
+def BringMaxToFront(board, squares, first, last):
+	if first >= last:
+		return
+	firstScore = ScoreSquare(board, squares[first])
+	for index in range(first, last):
+		thisScore = ScoreSquare(board, squares[index])
+		if thisScore > firstScore:
+			squares[first], squares[index] = squares[index], squares[first]
+			firstScore = thisScore
+
 def EmptySquares(board):
 	squares = []
 	for row in range(len(board)):
@@ -56,7 +68,8 @@ def EmptySquares(board):
 			if board[row][col] == 0:
 				squares.append(Square(row, col))
 
-	squares.sort(key = lambda square: -ScoreSquare(board, square))
+	# squares.sort(key = lambda square: -ScoreSquare(board, square))
+	BringMaxToFront(board, squares, 0, len(squares))
 	return squares
 
 class SudokuSolver:
@@ -111,7 +124,7 @@ class SudokuSolver:
 					if self.CanPlace(trial, row, col):
 						self.board[row][col] = trial
 						yield from self.ConditionalYield(1)
-						self.squares[index + 1:] = sorted(self.squares[index +1:], key = lambda square: -ScoreSquare(self.board, square))
+						BringMaxToFront(self.board, self.squares, index+1, len(self.squares))
 						yield from self.Generate()
 				self.board[row][col] = 0
 				yield from self.ConditionalYield(1, updateTried=False)
