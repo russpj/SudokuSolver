@@ -4,12 +4,50 @@
 # backtracking Sudoku solver
 
 from random import shuffle
+from math import sqrt
 
 class Square:
 	def __init__(self, row, column):
 		self.row = row
 		self.col = column
 
+
+def ScoreRow(board, row):
+	score = 0
+	for col in range(len(board[0])):
+		if board[row][col] != 0:
+			score += 1
+	return score
+
+def ScoreColumn(board, col):
+	score = 0
+	for row in range(len(board)):
+		if board[row][col] != 0:
+			score += 1
+	return score
+
+
+def ScoreSection(board, square):
+	score = 0
+	sizeSection = int(sqrt(len(board))+0.5)
+	firstRow = (square.row//sizeSection)*3
+	firstCol = (square.col//sizeSection)*3
+	for row in range(firstRow, firstRow+sizeSection):
+		for col in range(firstCol, firstCol+sizeSection):
+			if board[row][col] != 0:
+				score += 1
+	return score
+
+
+def ScoreSquare(board, square):
+	if board[square.row][square.col] != 0:
+		return 0
+
+	score = 0
+	score += ScoreRow(board, square.row)
+	score += ScoreColumn(board, square.col)
+	score += ScoreSection(board, square)
+	return score
 
 def EmptySquares(board):
 	squares = []
@@ -18,7 +56,7 @@ def EmptySquares(board):
 			if board[row][col] == 0:
 				squares.append(Square(row, col))
 
-	shuffle(squares)
+	squares.sort(key = lambda square: -ScoreSquare(board, square))
 	return squares
 
 class SudokuSolver:
