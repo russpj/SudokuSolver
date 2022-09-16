@@ -424,7 +424,7 @@ class Sudoku(App):
 														 difficulty_button_callback=self.DifficultyButtonCallback)
 		layout.add_widget(self.footer)
 
-		self.solver = self.SolverFromPuzzleNumber(self.puzzleNumber, self.fast)
+		self.solver = self.SolverFromPuzzleNumber(self.puzzleNumber)
 		board = self.solver.board
 		self.boardLayout.InitBoard(board)
 
@@ -437,9 +437,9 @@ class Sudoku(App):
 			board = hardBoard
 		return SudokuSolver(board, yieldLevel=0)
 
-	def SolverFromPuzzleNumber(self, number, fast=False):
+	def SolverFromPuzzleNumber(self, number):
 		board = puzzles[number][1]
-		return SudokuSolver(board, fast, yieldLevel=0)
+		return SudokuSolver(board, self.fast, yieldLevel=0)
 
 	def FrameN(self, dt):
 		if self.generator is None:
