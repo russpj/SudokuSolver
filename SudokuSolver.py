@@ -67,17 +67,19 @@ def EmptySquares(board):
 		for col in range(len(board[0])):
 			if board[row][col] == 0:
 				squares.append(Square(row, col))
-
-	# squares.sort(key = lambda square: -ScoreSquare(board, square))
-	BringMaxToFront(board, squares, 0, len(squares))
 	return squares
 
+
 class SudokuSolver:
-	def __init__(self, board, yieldLevel=0):
+	def __init__(self, board, fast=False, yieldLevel=0):
 		self.board = board
+		self.fast = fast
 		self.yieldLevel = yieldLevel
 		self.positionsTried = 0
 		self.squares = EmptySquares(board)
+
+		if self.fast:
+			BringMaxToFront(self.board, self.squares, 0, len(self.squares))
 
 	def CanPlaceInRow(self, n, row):
 		for col in range(9):
@@ -124,7 +126,8 @@ class SudokuSolver:
 					if self.CanPlace(trial, row, col):
 						self.board[row][col] = trial
 						yield from self.ConditionalYield(1)
-						BringMaxToFront(self.board, self.squares, index+1, len(self.squares))
+						if self.fast:
+							BringMaxToFront(self.board, self.squares, index+1, len(self.squares))
 						yield from self.Generate()
 				self.board[row][col] = 0
 				yield from self.ConditionalYield(1, updateTried=False)

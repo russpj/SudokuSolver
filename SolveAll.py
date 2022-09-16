@@ -30,7 +30,7 @@ def Main(arguments):
 	for puzzle in puzzles:
 		board = puzzle[1]
 		trials = 0
-		solver = SudokuSolver(board, yieldLevel=0)
+		solver = SudokuSolver(board, fast, yieldLevel=0)
 		generator = solver.Generate()
 		for result in generator:
 			# result = next(generator)
