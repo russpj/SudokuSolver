@@ -1,13 +1,31 @@
 # SolveAll.py
 # solve all of the puzzles and report the solutions
 
+from sys import argv
+from getopt import getopt, GetoptError
 from time import time
 from Puzzle import ParsePuzzleStrings
 from SudokuSolver import SudokuSolver
 
-def Main():
+def Main(arguments):
 	puzzles = ParsePuzzleStrings()
 	keySum = 0
+	command_line_documentation = "SolveAll.py -h -f"
+	fast = False
+
+	try: 
+		opts, args = getopt(arguments, "hf", ("help", "fast"))
+	except GetoptError:
+		print(f'Invalid arguments: {command_line_documentation}')
+		exit(2)
+
+	for opt, arg in opts:
+		if opt in ('-h', '--help'):
+			print(command_line_documentation)
+			exit(0)
+
+		if opt in ('-f', '--fast'):
+			fast = True
 	startTime = time()
 	for puzzle in puzzles:
 		board = puzzle[1]
@@ -26,4 +44,4 @@ def Main():
 	print("After {} seconds, the final sum of keys is {}".format(endTime-startTime, keySum))	
 
 if __name__ == '__main__':
-	Main()
+	Main(argv[1:])
