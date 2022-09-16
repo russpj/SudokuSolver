@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+# 
 # SolveAll.py
 # solve all of the puzzles and report the solutions
 
