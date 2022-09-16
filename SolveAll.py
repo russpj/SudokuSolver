@@ -42,9 +42,9 @@ def Main(arguments):
 				line = solver.board[0]
 				key = line[0]*100 + line[1]*10 + line[2]
 				keySum += key
-				print("After {} trials, we found a solution for {} with a key: {}".format(trials, puzzle[0], key))
+				print(f"After {trials} trials, we found a solution for {puzzle[0]} with a key: {key}")
 	endTime = time()
-	print("After {} seconds, the final sum of keys is {}".format(endTime-startTime, keySum))	
+	print(f"After {endTime-startTime} seconds, the final sum of keys is {keySum}")	
 
 if __name__ == '__main__':
 	Main(argv[1:])
