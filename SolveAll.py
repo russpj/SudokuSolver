@@ -26,6 +26,7 @@ def Main(arguments):
 
 		if opt in ('-f', '--fast'):
 			fast = True
+			
 	startTime = time()
 	for puzzle in puzzles:
 		board = puzzle[1]

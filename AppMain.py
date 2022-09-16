@@ -1,4 +1,12 @@
+#	AppMain.py
+#
+# 	A Kivy shell for the sudoku solver
+
+from sys import argv
+from getopt import getopt, GetoptError
 from enum import Enum
+from os import environ
+environ["KIVY_NO_ARGS"] = "1"
 from kivy.app import App
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
@@ -386,6 +394,11 @@ class FooterLayout(BoxLayout):
 
 
 class Sudoku(App):
+
+	def __init__(self, fast=False):
+		self.fast = fast
+		super().__init__()
+
 	def build(self):
 		self.root = layout = BoxLayout(orientation = 'vertical')
 
@@ -411,7 +424,7 @@ class Sudoku(App):
 														 difficulty_button_callback=self.DifficultyButtonCallback)
 		layout.add_widget(self.footer)
 
-		self.solver = self.SolverFromPuzzleNumber(self.puzzleNumber)
+		self.solver = self.SolverFromPuzzleNumber(self.puzzleNumber, self.fast)
 		board = self.solver.board
 		self.boardLayout.InitBoard(board)
 
@@ -424,9 +437,9 @@ class Sudoku(App):
 			board = hardBoard
 		return SudokuSolver(board, yieldLevel=0)
 
-	def SolverFromPuzzleNumber(self, number):
+	def SolverFromPuzzleNumber(self, number, fast=False):
 		board = puzzles[number][1]
-		return SudokuSolver(board, yieldLevel=0)
+		return SudokuSolver(board, fast, yieldLevel=0)
 
 	def FrameN(self, dt):
 		if self.generator is None:
@@ -503,8 +516,25 @@ class Sudoku(App):
 
 
 
-def Main():
-	Sudoku().run()
+def Main(arguments):
+	command_line_documentation = "SolveAll.py -h -f"
+	fast = False
+
+	try: 
+		opts, args = getopt(arguments, "hf", ("help", "fast"))
+	except GetoptError:
+		print(f'Invalid arguments: {command_line_documentation}')
+		exit(2)
+
+	for opt, arg in opts:
+		if opt in ('-h', '--help'):
+			print(command_line_documentation)
+			exit(0)
+
+		if opt in ('-f', '--fast'):
+			fast = True
+
+	Sudoku(fast).run()
 
 if __name__ == '__main__':
-	Main()
+	Main(argv[1:])
